@@ -72,16 +72,10 @@
 					"PackageIdentifier" : "7zip.7zip"
 				},
 				{
-					"PackageIdentifier" : "Neovim.Neovim"
-				},
-				{
 					"PackageIdentifier" : "Valve.Steam"
 				},
 				{
-					"PackageIdentifier" : "BurntSushi.ripgrep.MSVC"
-				},
-				{
-					"PackageIdentifier" : "zig.zig"
+					"PackageIdentifier" : "Microsoft.VisualStudioCode"
 				}
 			],
 			"SourceDetails" : 

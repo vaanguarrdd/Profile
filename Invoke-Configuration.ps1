@@ -1,0 +1,1 @@
+Get-Content -Path $PSScriptRoot\winget_profile.txt | Invoke-Expression

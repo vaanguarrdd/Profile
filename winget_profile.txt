@@ -1,0 +1,23 @@
+winget uninstall Clipchamp.Clipchamp_yxz26nhyzhsrt --source winget --silent
+winget uninstall Microsoft.BingWeather_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.BingNews_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.GamingApp_8wekyb3d8bbwe --source winget --silent
+winget uninstall Getstarted_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.Paint_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.MicrosoftStickyNotes_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.MicrosoftSolitaireCollection_8wekyb3d8bbwe --source winget --silent
+winget uninstall microsoft.windowscommunicationsapps_8wekyb3d8bbwe --source winget --silent
+winget uninstall SpotifyAB.SpotifyMusic_zpdnekdrzrea0 --source winget --silent
+winget uninstall Microsoft.ZuneVideo_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.ZuneMusic_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.XboxSpeechToTextOverlay_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.XboxGamingOverlay_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.XboxGameOverlay_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.Xbox.TCUI_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.XboxIdentityProvider_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.WindowsSoundRecorder_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.WindowsMaps_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.People_8wekyb3d8bbwe --source winget --silent
+winget uninstall Microsoft.PowerAutomateDesktop_8wekyb3d8bbwe --source winget --silent
+winget upgrade --all
+winget import .\winget.json --accept-source-agreements --accept-package-agreements
