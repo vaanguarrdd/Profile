@@ -138,6 +138,7 @@ Function Start-LocalCyberChef {
 
 Set-Alias -Name scf -Value Stop-ComputerForce
 Set-Alias -Name rcf -Value Restart-ComputerForce
+Set-Alias -Name lsf -Value Get-ChildItemForce
 Set-Alias -Name eo -Value Expand-Object
 Set-Alias -Name fla -Value Format-ListAll
 Set-Alias -Name b64e -Value ConvertTo-Base64
