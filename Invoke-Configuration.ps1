@@ -153,11 +153,11 @@ Process {
         Remove-WindowsCapability -Name $PSItem -Online
     }
 
-    $EnableWindowsOptionalFeatures | ForEach-Object {
+    $EnableWindowsOptionalFeatures | ForEach-Object -Process {
         Enable-WindowsOptionalFeature -FeatureName $PSItem -Online
     }
 
-    $DisableWindowsOptionalFeatures | ForEach-Object {
+    $DisableWindowsOptionalFeatures | ForEach-Object -Process {
         Disable-WindowsOptionalFeature -FeatureName $PSItem -Online
     }
 }
