@@ -9,11 +9,11 @@ Filter Format-ListAll (
     $InputObject | Format-List *
 }
 Filter Expand-Object (
-    [Parameter(ValueFromPipeline)]
-    $InputObject, 
     [Parameter(Mandatory)]
     [String]
-    $Property
+    $Property,
+    [Parameter(ValueFromPipeline)]
+    $InputObject 
 ) { 
     $InputObject | Select-Object -ExpandProperty $Property
 }
@@ -46,6 +46,17 @@ Filter Get-ChildItemForce (
     $Path
 ) {
     Get-ChildItem -Path $Path -Force
+}
+Filter Get-ChildItemAll (
+    [Parameter(Mandatory)]
+    [ValidateNotNullOrEmpty()]
+    [String]
+    $InputObject,
+    [Parameter()]
+    [String]
+    $Path = 'C:\'
+) {
+    Get-ChildItem -Path $Path -Recurse -Filter *$InputObject* -ErrorAction SilentlyContinue
 }
 Filter ConvertTo-DangerousURI (
     [Parameter(ValueFromPipeline)]
@@ -147,5 +158,6 @@ Set-Alias -Name rf -Value ConvertTo-DangerousURI
 Set-Alias -Name df -Value ConvertTo-SafeURI
 Set-Alias -Name chef -Value Start-LocalCyberChef
 Set-Alias -Name rsp -Value Restart-Profile
+Set-Alias -Name lsa -Value Get-ChildItemAll
 
 Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
