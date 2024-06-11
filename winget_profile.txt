@@ -19,5 +19,4 @@ winget uninstall Microsoft.WindowsSoundRecorder_8wekyb3d8bbwe --source winget --
 winget uninstall Microsoft.WindowsMaps_8wekyb3d8bbwe --source winget --silent
 winget uninstall Microsoft.People_8wekyb3d8bbwe --source winget --silent
 winget uninstall Microsoft.PowerAutomateDesktop_8wekyb3d8bbwe --source winget --silent
-winget upgrade --all
-winget import .\winget.json --accept-source-agreements --accept-package-agreements
+winget import .\winget.json --accept-source-agreements --accept-package-agreements --silent

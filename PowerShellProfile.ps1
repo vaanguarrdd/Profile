@@ -1,7 +1,9 @@
-Function Prompt { $Env:ComputerName + "@" + (Get-Location) + "> " }
 Function Stop-ComputerForce { Stop-Computer -Force }
 Function Restart-ComputerForce { Restart-Computer -Force }
-Function Restart-Profile { .$PROFILE }
+Function Restart-Profile { 
+    Copy-Item -Path "$Env:OneDrive\SourceControl\Profile\PowerShellProfile.ps1" -Destination $PROFILE -Force
+    .$PROFILE 
+}
 Filter Format-ListAll (
     [Parameter(ValueFromPipeline)]
     $InputObject
@@ -72,7 +74,16 @@ Filter ConvertTo-SafeURI (
 ) {
     $InputObject.Replace('.', '[.]').Replace('http', 'hxxp')
 }
-
+Filter Hide-Item (
+    [Parameter(
+        Mandatory,
+        ValueFromPipeline
+    )]
+    [ValidateScript({ Test-Path -Path $PSItem })]
+    $Path
+) {
+    $Path.Attributes = $Path.Attributes -bor "Hidden"
+}
 Function Get-NixOSWSL {
     [CmdletBinding()]
     Param (
@@ -150,6 +161,7 @@ Function Start-LocalCyberChef {
 Set-Alias -Name scf -Value Stop-ComputerForce
 Set-Alias -Name rcf -Value Restart-ComputerForce
 Set-Alias -Name lsf -Value Get-ChildItemForce
+Set-Alias -Name lsa -Value Get-ChildItemAll
 Set-Alias -Name eo -Value Expand-Object
 Set-Alias -Name fla -Value Format-ListAll
 Set-Alias -Name b64e -Value ConvertTo-Base64
@@ -158,6 +170,11 @@ Set-Alias -Name rf -Value ConvertTo-DangerousURI
 Set-Alias -Name df -Value ConvertTo-SafeURI
 Set-Alias -Name chef -Value Start-LocalCyberChef
 Set-Alias -Name rsp -Value Restart-Profile
-Set-Alias -Name lsa -Value Get-ChildItemAll
+Set-Alias -Name cat -Value bat
+Set-Alias -Name vi -Value nvim
+Set-Alias -Name vim -Value nvim
+Set-Alias -Name ghd -Value GithubDesktop
+Set-Alias -Name s -Value Set-Clipboard
 
-Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+zoxide init powershell --cmd cd | Out-String | Invoke-Expression
+starship init powershell --print-full-init | Out-String | Invoke-Expression

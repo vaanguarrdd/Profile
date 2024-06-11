@@ -1,3 +1,4 @@
+#Requires -RunAsAdministrator
 [CmdletBinding()]
 Param (
     [Parameter()]
@@ -142,25 +143,24 @@ Param (
     )
 )
 Begin {
-
+    $PreviousProgressPreference = $ProgressPreference
+    $ProgressPreference = 'SilentlyContinue'
 }
 Process {
-    Get-Content -Path $PSScriptRoot\winget_profile.txt | Invoke-Expression
+    Get-Content -Path $PSScriptRoot\winget_profile.txt | Invoke-Expression | Out-Null
 
-    Write-Output $PSScriptRoot
-    
     $WindowsCapabilities | ForEach-Object -Process {
-        Remove-WindowsCapability -Name $PSItem -Online
+        Remove-WindowsCapability -Name $PSItem -Online | Out-Null
     }
 
     $EnableWindowsOptionalFeatures | ForEach-Object -Process {
-        Enable-WindowsOptionalFeature -FeatureName $PSItem -Online
+        Enable-WindowsOptionalFeature -FeatureName $PSItem -Online | Out-Null
     }
 
     $DisableWindowsOptionalFeatures | ForEach-Object -Process {
-        Disable-WindowsOptionalFeature -FeatureName $PSItem -Online
+        Disable-WindowsOptionalFeature -FeatureName $PSItem -Online | Out-Null
     }
 }
 End {
-
+    $ProgressPreference = $PreviousProgressPreference
 }
