@@ -142,25 +142,18 @@ Param (
         "Containers-SDN"
     )
 )
-Begin {
-    $PreviousProgressPreference = $ProgressPreference
-    $ProgressPreference = 'SilentlyContinue'
-}
-Process {
-    Get-Content -Path $PSScriptRoot\winget_profile.txt | Invoke-Expression | Out-Null
-
-    $WindowsCapabilities | ForEach-Object -Process {
-        Remove-WindowsCapability -Name $PSItem -Online | Out-Null
-    }
-
-    $EnableWindowsOptionalFeatures | ForEach-Object -Process {
-        Enable-WindowsOptionalFeature -FeatureName $PSItem -Online | Out-Null
-    }
-
-    $DisableWindowsOptionalFeatures | ForEach-Object -Process {
-        Disable-WindowsOptionalFeature -FeatureName $PSItem -Online | Out-Null
-    }
-}
 End {
-    $ProgressPreference = $PreviousProgressPreference
+    Get-Content -Path $PSScriptRoot\winget_profile.txt | Invoke-Expression 
+    
+    $WindowsCapabilities | ForEach-Object -Process {
+        Remove-WindowsCapability -Name $PSItem -Online -ProgressAction SilentlyContinue
+    } | Out-Null
+    
+    $EnableWindowsOptionalFeatures | ForEach-Object -Process {
+        Enable-WindowsOptionalFeature -FeatureName $PSItem -Online -ProgressAction SilentlyContinue
+    } | Out-Null
+    
+    $DisableWindowsOptionalFeatures | ForEach-Object -Process {
+        Disable-WindowsOptionalFeature -FeatureName $PSItem -Online -ProgressAction SilentlyContinue
+    } | Out-Null
 }

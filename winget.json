@@ -97,6 +97,15 @@
 				},
 				{
 					"PackageIdentifier" : "DominikReichl.KeePass"
+				},
+				{
+					"PackageIdentifier" : "RustLang.Rustup"
+				},
+				{
+					"PackageIdentifier" : "GoLang.Go"
+				},
+				{
+					"PackageIdentifier" : "GitHub.GitHubDesktop"
 				}
 			],
 			"SourceDetails" : 
@@ -108,5 +117,5 @@
 			}
 		}
 	],
-	"WinGetVersion" : "1.7.10582"
+	"WinGetVersion" : "1.7.11261"
 }

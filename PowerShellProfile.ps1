@@ -178,3 +178,16 @@ Set-Alias -Name s -Value Set-Clipboard
 
 zoxide init powershell --cmd cd | Out-String | Invoke-Expression
 starship init powershell --print-full-init | Out-String | Invoke-Expression
+If (Select-String -Path "$Env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" -Pattern '"colorScheme": "Solarized Light"' -Quiet) {
+    Set-PSReadLineOption -Colors @{
+        Number = $PSStyle.Foreground.Green
+    }
+}
+
+Start-Job -Name RemoteDesktopFix -ScriptBlock {
+    $RemoteDesktopScheduledTask = Get-ScheduledTask -TaskPath \RemoteDesktop* 
+    If ($RemoteDesktopScheduledTask.State -ne 'Disabled') {
+        $RemoteDesktopScheduledTask | Disable-ScheduledTask
+    }
+    Start-Sleep -Seconds 300
+} | Out-Null
