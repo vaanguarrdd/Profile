@@ -24,9 +24,6 @@
 					"PackageIdentifier" : "Microsoft.VCLibs.Desktop.14"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.DevHome"
-				},
-				{
 					"PackageIdentifier" : "Microsoft.WindowsTerminal"
 				},
 				{
@@ -39,9 +36,6 @@
 					"PackageIdentifier" : "Git.Git"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.DotNet.SDK.8"
-				},
-				{
 					"PackageIdentifier" : "Microsoft.PowerShell"
 				},
 				{
@@ -49,15 +43,6 @@
 				},
 				{
 					"PackageIdentifier" : "Obsidian.Obsidian"
-				},
-				{
-					"PackageIdentifier" : "jqlang.jq"
-				},
-				{
-					"PackageIdentifier" : "MikeFarah.yq"
-				},
-				{
-					"PackageIdentifier" : "VirusTotal.YARA"
 				},
 				{
 					"PackageIdentifier" : "ajeetdsouza.zoxide"
@@ -75,9 +60,6 @@
 					"PackageIdentifier" : "Valve.Steam"
 				},
 				{
-					"PackageIdentifier" : "Microsoft.VisualStudioCode"
-				},
-				{
 					"PackageIdentifier" : "Discord.Discord"
 				},
 				{
@@ -87,22 +69,10 @@
 					"PackageIdentifier" : "Corsair.iCUE.5"
 				},
 				{
-					"PackageIdentifier" : "Neovim.Neovim"
-				},
-				{
-					"PackageIdentifier" : "Kitware.CMake"
-				},
-				{
 					"PackageIdentifier" : "BurntSushi.ripgrep.MSVC"
 				},
 				{
 					"PackageIdentifier" : "DominikReichl.KeePass"
-				},
-				{
-					"PackageIdentifier" : "RustLang.Rustup"
-				},
-				{
-					"PackageIdentifier" : "GoLang.Go"
 				},
 				{
 					"PackageIdentifier" : "GitHub.GitHubDesktop"
