@@ -10,8 +10,7 @@ Param (
     ),
     [Parameter()]
     [String[]]
-    $EnableWindowsOptionalFeatures = @(
-        "HostGuardian",
+    $EnableWindowsOptionalFeatures  @(
         "HypervisorPlatform",
         "VirtualMachinePlatform",
         "Containers-DisposableClientVM",
@@ -22,7 +21,8 @@ Param (
         "Microsoft-Hyper-V-Hypervisor",
         "Microsoft-Hyper-V-Services",
         "Microsoft-Hyper-V-Management-Clients",
-        "Windows-Defender-ApplicationGuard"
+        #"Windows-Defender-ApplicationGuard", #No Longer Available
+        "HostGuardian"
     ),
     [Parameter()]
     [String[]]
@@ -119,7 +119,7 @@ Param (
         "IIS-ManagementService",
         "IIS-WMICompatibility",
         "IIS-LegacyScripts",
-        "IIS-LegacySnapIn",
+        #"IIS-LegacySnapIn", #No Longer Available
         "IIS-FTPServer",
         "IIS-FTPSvc",
         "IIS-FTPExtensibility",
@@ -146,14 +146,17 @@ End {
     Get-Content -Path $PSScriptRoot\winget_profile.txt | Invoke-Expression 
     
     $WindowsCapabilities | ForEach-Object -Process {
-        Remove-WindowsCapability -Name $PSItem -Online -ProgressAction SilentlyContinue
+      	Write-Verbose "Removing $PSItem"
+        Remove-WindowsCapability -Name $PSItem -Online -ProgressAction SilentlyContinue -Verbose:$False
     } | Out-Null
     
     $EnableWindowsOptionalFeatures | ForEach-Object -Process {
-        Enable-WindowsOptionalFeature -FeatureName $PSItem -Online -ProgressAction SilentlyContinue
+      	Write-Verbose "Enabling $PSItem"
+        Enable-WindowsOptionalFeature -FeatureName $PSItem -Online -ProgressAction SilentlyContinue -NoRestart -Verbose:$False
     } | Out-Null
     
     $DisableWindowsOptionalFeatures | ForEach-Object -Process {
-        Disable-WindowsOptionalFeature -FeatureName $PSItem -Online -ProgressAction SilentlyContinue
+      	Write-Verbose "Disabling $PSItem"
+        Disable-WindowsOptionalFeature -FeatureName $PSItem -Online -ProgressAction SilentlyContinue -NoRestart -Verbose:$False
     } | Out-Null
 }
