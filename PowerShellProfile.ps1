@@ -1,3 +1,6 @@
+If (-not [Environment]::UserInteractive -or [Console]::IsInputRedirected) {
+    Return
+}
 Function Stop-ComputerForce { Stop-Computer -Force }
 Function Restart-ComputerForce { Restart-Computer -Force }
 Function Restart-Profile { 
@@ -144,7 +147,7 @@ Function Start-LocalCyberChef {
                 Headers = @{
                     Accept = 'application/octet-stream'
                 }
-                Uri = $LatestReleaseInformation.assets.url
+                Uri     = $LatestReleaseInformation.assets.url
                 OutFile = $CyberChefDirectory + 'CyberChef.zip'
             }
             Invoke-RestMethod @CyberChefParameters
@@ -158,36 +161,247 @@ Function Start-LocalCyberChef {
     }
 }
 
-Set-Alias -Name scf -Value Stop-ComputerForce
-Set-Alias -Name rcf -Value Restart-ComputerForce
-Set-Alias -Name lsf -Value Get-ChildItemForce
-Set-Alias -Name lsa -Value Get-ChildItemAll
-Set-Alias -Name eo -Value Expand-Object
-Set-Alias -Name fla -Value Format-ListAll
-Set-Alias -Name b64e -Value ConvertTo-Base64
-Set-Alias -Name b64d -Value ConvertFrom-Base64
-Set-Alias -Name rf -Value ConvertTo-DangerousURI
-Set-Alias -Name df -Value ConvertTo-SafeURI
-Set-Alias -Name chef -Value Start-LocalCyberChef
-Set-Alias -Name rsp -Value Restart-Profile
-Set-Alias -Name cat -Value bat
-Set-Alias -Name vi -Value nvim
-Set-Alias -Name vim -Value nvim
-Set-Alias -Name ghd -Value GithubDesktop
-Set-Alias -Name s -Value Set-Clipboard
+Register-ArgumentCompleter -Native -CommandName 'wslc', 'wslc.exe', 'docker', 'wc' -ScriptBlock {
+    Param(
+        $wordToComplete,
+        $commandAst,
+        $cursorPosition
+    )
 
-zoxide init powershell --cmd cd | Out-String | Invoke-Expression
-starship init powershell --print-full-init | Out-String | Invoke-Expression
-If (Select-String -Path "$Env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" -Pattern '"colorScheme": "Solarized Light"' -Quiet) {
-    Set-PSReadLineOption -Colors @{
-        Number = $PSStyle.Foreground.Green
+    $rootCommands = @{
+        'attach'    = 'Attach to a container'
+        'build'     = 'Build an image from a Dockerfile'
+        'container' = 'Manage containers'
+        'create'    = 'Create a container'
+        'exec'      = 'Execute a command in a running container'
+        'export'    = 'Export a container filesystem as a tar archive'
+        'image'     = 'Manage images'
+        'images'    = 'List images'
+        'import'    = 'Import an image from a tarball'
+        'info'      = 'Display system information'
+        'inspect'   = 'Inspect objects'
+        'kill'      = 'Kill one or more running containers'
+        'list'      = 'List containers'
+        'load'      = 'Load images'
+        'login'     = 'Log in to a registry'
+        'logout'    = 'Log out from a registry'
+        'logs'      = 'View container logs'
+        'network'   = 'Manage networks'
+        'pull'      = 'Pull images'
+        'push'      = 'Upload an image to a registry'
+        'registry'  = 'Manage registry credentials'
+        'remove'    = 'Remove containers'
+        'rmi'       = 'Remove images'
+        'run'       = 'Run a container'
+        'save'      = 'Save images'
+        'settings'  = 'Open the settings file in default editor'
+        'start'     = 'Start a container'
+        'stats'     = 'Display container resource usage statistics'
+        'stop'      = 'Stop containers'
+        'system'    = 'System-level commands'
+        'tag'       = 'Tag an image'
+        'version'   = 'Show version information'
+        'volume'    = 'Manage volumes'
+    }
+
+    $subCommands = @{
+        'container' = @('attach', 'cp', 'create', 'exec', 'export', 'inspect', 'kill', 'list', 'logs', 'prune', 'remove', 'run', 'start', 'stats', 'stop')
+        'image'     = @('build', 'import', 'inspect', 'list', 'load', 'prune', 'pull', 'push', 'remove', 'save', 'tag')
+        'network'   = @('connect', 'create', 'disconnect', 'inspect', 'list', 'prune', 'remove')
+        'volume'    = @('create', 'inspect', 'list', 'prune', 'remove')
+        'system'    = @('info', 'session')
+        'registry'  = @('login', 'logout')
+    }
+
+    $elements = @($commandAst.CommandElements)
+    if ($elements.Count -eq 0) {
+        return
+    }
+
+    if ($cursorPosition -gt $elements[-1].Extent.EndOffset) {
+        $argIndex = $elements.Count
+        $prevArgs = @(if ($elements.Count -gt 1) { $elements[1..($elements.Count - 1)] | ForEach-Object { $_.Extent.Text } })
+    }
+    else {
+        $argIndex = $elements.Count - 1
+        $prevArgs = @(if ($elements.Count -gt 2) { $elements[1..($elements.Count - 2)] | ForEach-Object { $_.Extent.Text } })
+    }
+
+    $getContainers = {
+        $raw = wslc list -a --format json 2>$null
+        if ($raw) {
+            foreach ($line in $raw) {
+                try {
+                    $c = $line | ConvertFrom-Json
+                    if ($c.Names -and $c.Names -like "$wordToComplete*") {
+                        [System.Management.Automation.CompletionResult]::new(
+                            $c.Names,
+                            $c.Names,
+                            'ParameterValue',
+                            "Container: $($c.Names) ($($c.Image)) [$($c.State)]"
+                        )
+                    }
+                    if ($c.ID -and $c.ID -like "$wordToComplete*") {
+                        [System.Management.Automation.CompletionResult]::new(
+                            $c.ID,
+                            $c.ID,
+                            'ParameterValue',
+                            "Container: $($c.ID) ($($c.Names)) [$($c.State)]"
+                        )
+                    }
+                }
+                catch {}
+            }
+        }
+    }
+
+    $getImages = {
+        $raw = wslc images --format json 2>$null
+        if ($raw) {
+            foreach ($line in $raw) {
+                try {
+                    $img = $line | ConvertFrom-Json
+                    $tag = if ($img.Repository -and $img.Tag) { "$($img.Repository):$($img.Tag)" } else { $null }
+                    if ($tag -and $tag -like "$wordToComplete*") {
+                        [System.Management.Automation.CompletionResult]::new(
+                            $tag,
+                            $tag,
+                            'ParameterValue',
+                            "Image: $tag ($($img.ID))"
+                        )
+                    }
+                    if ($img.ID -and $img.ID -like "$wordToComplete*") {
+                        [System.Management.Automation.CompletionResult]::new(
+                            $img.ID,
+                            $img.ID,
+                            'ParameterValue',
+                            "Image ID: $($img.ID) ($tag)"
+                        )
+                    }
+                }
+                catch {}
+            }
+        }
+    }
+
+    if ($argIndex -eq 1) {
+        $rootCommands.GetEnumerator() |
+        Where-Object { $_.Key -like "$wordToComplete*" } |
+        Sort-Object Key |
+        ForEach-Object {
+            [System.Management.Automation.CompletionResult]::new(
+                $_.Key,
+                $_.Key,
+                'Command',
+                $_.Value
+            )
+        }
+        return
+    }
+
+    $primary = $prevArgs[0]
+
+    if ($argIndex -eq 2) {
+        if ($subCommands.ContainsKey($primary)) {
+            $subCommands[$primary] |
+            Where-Object { $_ -like "$wordToComplete*" } |
+            ForEach-Object {
+                [System.Management.Automation.CompletionResult]::new(
+                    $_,
+                    $_,
+                    'ParameterValue',
+                    "$primary $_"
+                )
+            }
+            return
+        }
+
+        if ($primary -in @('attach', 'exec', 'kill', 'logs', 'remove', 'start', 'stop', 'inspect')) {
+            & $getContainers
+            return
+        }
+
+        if ($primary -in @('run', 'rmi', 'tag', 'push')) {
+            & $getImages
+            return
+        }
+    }
+
+    if ($argIndex -eq 3) {
+        $sub = $prevArgs[1]
+        if ($primary -eq 'container' -and $sub -in @('attach', 'exec', 'kill', 'logs', 'remove', 'start', 'stop', 'inspect')) {
+            & $getContainers
+            return
+        }
+
+        if ($primary -eq 'image' -and $sub -in @('remove', 'inspect', 'tag', 'push')) {
+            & $getImages
+            return
+        }
     }
 }
 
-Start-Job -Name RemoteDesktopFix -ScriptBlock {
-    $RemoteDesktopScheduledTask = Get-ScheduledTask -TaskPath \RemoteDesktop* 
-    If ($RemoteDesktopScheduledTask.State -ne 'Disabled') {
-        $RemoteDesktopScheduledTask | Disable-ScheduledTask
+$Aliases = @{
+    scf    = 'Stop-ComputerForce'
+    rcf    = 'Restart-ComputerForce'
+    lsf    = 'Get-ChildItemForce'
+    lsa    = 'Get-ChildItemAll'
+    eo     = 'Expand-Object'
+    fla    = 'Format-ListAll'
+    b64e   = 'ConvertTo-Base64'
+    b64d   = 'ConvertFrom-Base64'
+    rf     = 'ConvertTo-DangerousURI'
+    df     = 'ConvertTo-SafeURI'
+    chef   = 'Start-LocalCyberChef'
+    rsp    = 'Restart-Profile'
+    cat    = 'bat'
+    vi     = 'nvim'
+    vim    = 'nvim'
+    ghd    = 'GithubDesktop'
+    s      = 'Set-Clipboard'
+    docker = 'wslc'
+    gj     = 'Get-Job'
+    rcj    = 'Receive-Job'
+    sj     = 'Stop-Job'
+    rj     = 'Remove-Job'
+    wc     = 'wslc'
+}
+
+$Aliases.GetEnumerator() | ForEach-Object { 
+    Set-Alias -Name $_.Key -Value $_.Value 
+}
+
+If (Get-Command -Name 'starship' -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (starship init powershell | Out-String) })
+}
+If (Get-Command -Name 'zoxide' -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (zoxide init powershell --cmd cd | Out-String) })
+}
+If (Get-Command -Name 'minikube' -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (minikube completion powershell | Out-String) })
+}
+If (Get-Command -Name 'kubectl' -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (kubectl completion powershell | Out-String) })
+}
+If (Get-Command -Name 'helm' -ErrorAction SilentlyContinue) {
+    Invoke-Expression (& { (helm completion powershell | Out-String) })
+}
+
+If (Select-String -Path "$Env:LocalAppData\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\LocalState\settings.json" -Pattern '"colorScheme": "Solarized Light"' -Quiet) {
+    Set-PSReadLineOption -Colors @{
+        Number             = "`e[39m"
+        ContinuationPrompt = "`e[39m"
+        Member             = "`e[39m"
+        Type               = "`e[39m"
     }
-    Start-Sleep -Seconds 300
-} | Out-Null
+}
+
+Start-Job -Name Prevent-Idle -ScriptBlock {
+    $Shell = New-Object -ComObject Wscript.Shell
+    While ($True) {
+        $Shell.SendKeys('{SCROLLLOCK}')
+        Start-Sleep -Milliseconds 200
+        $Shell.SendKeys('{SCROLLLOCK}')
+        Start-Sleep -Seconds 240
+    }
+}
