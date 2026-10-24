@@ -1,0 +1,10 @@
+# OS & Editor files
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# Temporary & log files
+*.log
+*.tmp

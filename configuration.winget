@@ -1,0 +1,210 @@
+# yaml-language-server: $schema=https://aka.ms/configuration-dsc-schema/0.2
+properties:
+  configurationVersion: 0.2.0
+  resources:
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Edge
+      directives:
+        description: Install Microsoft Edge
+      settings:
+        id: Microsoft.Edge
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_WindowsTerminal
+      directives:
+        description: Install Windows Terminal
+      settings:
+        id: Microsoft.WindowsTerminal
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_OneDrive
+      directives:
+        description: Install Microsoft OneDrive
+      settings:
+        id: Microsoft.OneDrive
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_PowerToys
+      directives:
+        description: Install Microsoft PowerToys
+      settings:
+        id: Microsoft.PowerToys
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Git
+      directives:
+        description: Install Git
+      settings:
+        id: Git.Git
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_PowerShell
+      directives:
+        description: Install PowerShell 7
+      settings:
+        id: Microsoft.PowerShell
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_RemoteDesktopClient
+      directives:
+        description: Install Microsoft Remote Desktop Client
+      settings:
+        id: Microsoft.RemoteDesktopClient
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Obsidian
+      directives:
+        description: Install Obsidian
+      settings:
+        id: Obsidian.Obsidian
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Zoxide
+      directives:
+        description: Install zoxide
+      settings:
+        id: ajeetdsouza.zoxide
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Fzf
+      directives:
+        description: Install fzf
+      settings:
+        id: junegunn.fzf
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Bat
+      directives:
+        description: Install bat
+      settings:
+        id: sharkdp.bat
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_7zip
+      directives:
+        description: Install 7-Zip
+      settings:
+        id: 7zip.7zip
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Steam
+      directives:
+        description: Install Valve Steam
+      settings:
+        id: Valve.Steam
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Discord
+      directives:
+        description: Install Discord
+      settings:
+        id: Discord.Discord
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Starship
+      directives:
+        description: Install Starship Prompt
+      settings:
+        id: Starship.Starship
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_iCUE
+      directives:
+        description: Install Corsair iCUE 5
+      settings:
+        id: Corsair.iCUE.5
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Ripgrep
+      directives:
+        description: Install ripgrep (MSVC)
+      settings:
+        id: BurntSushi.ripgrep.MSVC
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_KeePass
+      directives:
+        description: Install KeePass
+      settings:
+        id: DominikReichl.KeePass
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GitHubDesktop
+      directives:
+        description: Install GitHub Desktop
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Canva
+      directives:
+        description: Install Canva
+      settings:
+        id: Canva.Canva
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_NordVPN
+      directives:
+        description: Install NordVPN
+      settings:
+        id: NordSecurity.NordVPN
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_YaraX
+      directives:
+        description: Install VirusTotal YARA-X
+      settings:
+        id: VirusTotal.Yara-X
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Neovim
+      directives:
+        description: Install Neovim
+      settings:
+        id: Neovim.Neovim
+        source: winget
+        ensure: Present
