@@ -208,3 +208,21 @@ properties:
         id: Neovim.Neovim
         source: winget
         ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_DuckDB
+      directives:
+        description: Install DuckDB CLI
+      settings:
+        id: DuckDB.cli
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Jq
+      directives:
+        description: Install jq
+      settings:
+        id: jqlang.jq
+        source: winget
+        ensure: Present

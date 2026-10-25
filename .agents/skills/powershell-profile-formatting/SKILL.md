@@ -8,7 +8,7 @@ description: >-
 
 # PowerShell Profile Formatting & Style Guide
 
-This skill governs the exact formatting, syntax conventions, and structural idioms used across the author's PowerShell profile (`PowerShellProfile.ps1`, `Invoke-Configuration.ps1`, `Sync-Profile.ps1`). Whenever generating, writing, refactoring, or reviewing PowerShell code, strictly apply these conventions.
+This skill governs the exact formatting, syntax conventions, and structural idioms used across the author's PowerShell profile (`PowerShellProfile.ps1`, `modules/*.ps1`, `Invoke-Configuration.ps1`, `Sync-Profile.ps1`). Whenever generating, writing, refactoring, or reviewing PowerShell code, strictly apply these conventions.
 
 ---
 
@@ -221,7 +221,51 @@ Invoke-RestMethod @RequestParameters
 
 ---
 
-## 10. Complete Reference Example
+## 10. Flattened Conditionals & Early-Exit Guard Clauses
+
+Avoid deep nesting and pyramid-of-doom conditionals. Code should remain flat and readable by using early-exit guard clauses and decoupled top-level checks.
+
+* **Early-Exit Guard Clauses (Functions & ScriptBlocks)**:
+  Invert validation checks and return immediately (`Return`) when preconditions, files, or inputs are missing or invalid. Keep the main happy path at the root indentation level:
+  ```powershell
+  # Preferred: Flat with guard clauses
+  Set-PSReadLineKeyHandler -Chord 'Ctrl+r' -ScriptBlock {
+      $HistoryPath = (Get-PSReadLineOption).HistorySavePath
+      If (-not (Test-Path -LiteralPath $HistoryPath)) {
+          Return
+      }
+
+      $HistoryLines = [System.IO.File]::ReadAllLines($HistoryPath)
+      [Array]::Reverse($HistoryLines)
+      $SelectedCommand = $HistoryLines | & fzf --height=40% --reverse --no-sort --prompt='History> '
+      If ([String]::IsNullOrWhiteSpace($SelectedCommand)) {
+          Return
+      }
+
+      [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
+      [Microsoft.PowerShell.PSConsoleReadLine]::Insert($SelectedCommand)
+  }
+  ```
+
+* **Decoupled Top-Level & Configuration Checks**:
+  In script bodies and top-level profile configuration, do not nest dependent feature checks inside outer blocks. Cache module/command detection in cleanly typed variables or use compound `-and` conditions:
+  ```powershell
+  # Preferred: Cached flag and decoupled conditional blocks
+  $HasPSReadLine = [Boolean](Get-Module -Name PSReadLine -ErrorAction SilentlyContinue)
+
+  If ($HasPSReadLine) {
+      Set-PSReadLineKeyHandler -Key UpArrow -Function HistorySearchBackward
+      Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
+  }
+
+  If ($HasPSReadLine -and (Get-Command -Name 'fzf' -ErrorAction SilentlyContinue)) {
+      Set-PSReadLineKeyHandler -Chord 'Ctrl+r' -ScriptBlock { ... }
+  }
+  ```
+
+---
+
+## 11. Complete Reference Example
 
 ```powershell
 [CmdletBinding()]
