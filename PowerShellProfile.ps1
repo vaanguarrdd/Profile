@@ -360,22 +360,82 @@ If (-not (Test-Path -LiteralPath $CompletionCacheDirectory)) {
     New-Item -ItemType Directory -Path $CompletionCacheDirectory -Force | Out-Null
 }
 
+Function Get-CachedCommandScript {
+    <#
+    .SYNOPSIS
+        Retrieves or generates a disk-cached script for CLI tools.
+    .DESCRIPTION
+        Checks if a cached initialization or completion script exists under LocalAppData and
+        compares its modification timestamp against the binary executable.
+        If missing or stale, executes the generator ScriptBlock, saves the script,
+        and returns the cache file path for dot-sourcing.
+    .PARAMETER CommandName
+        The name of the CLI tool (e.g. 'starship', 'zoxide', 'gh', 'uv').
+    .PARAMETER ScriptGenerator
+        The ScriptBlock used to produce the script content.
+    .PARAMETER CacheType
+        The cache file category ('Init' or 'Completion'). Default is 'Init'.
+    .EXAMPLE
+        Get-CachedCommandScript -CommandName 'starship' -ScriptGenerator { starship init powershell }
+        Returns the path to the cached starship initialization script.
+    .EXAMPLE
+        Get-CachedCommandScript -CommandName 'gh' -ScriptGenerator { gh completion -s powershell } -CacheType Completion
+        Returns the path to the cached gh completion script.
+    #>
+    [CmdletBinding()]
+    Param (
+        [Parameter(Mandatory)]
+        [String]
+        $CommandName,
+        [Parameter(Mandatory)]
+        [ScriptBlock]
+        $ScriptGenerator,
+        [Parameter()]
+        [ValidateSet('Init', 'Completion')]
+        [String]
+        $CacheType = 'Init'
+    )
+    Begin {
+        $CommandInfo = Get-Command -Name $CommandName -ErrorAction SilentlyContinue
+    }
+    Process {
+        If (-not $CommandInfo) {
+            Return
+        }
+
+        $CacheFileName = "$CommandName-$($CacheType.ToLowerInvariant()).ps1"
+        $CacheFile = Join-Path -Path $CompletionCacheDirectory -ChildPath $CacheFileName
+        $BinaryItem = Get-Item -LiteralPath $CommandInfo.Source -ErrorAction SilentlyContinue
+        $CacheItem = Get-Item -LiteralPath $CacheFile -ErrorAction SilentlyContinue
+
+        If (-not $CacheItem -or ($BinaryItem -and $BinaryItem.LastWriteTimeUtc -gt $CacheItem.LastWriteTimeUtc)) {
+            $GeneratedScript = (& $ScriptGenerator) | Out-String
+            If ([String]::IsNullOrWhiteSpace($GeneratedScript)) {
+                Return
+            }
+
+            $CacheParameters = @{
+                LiteralPath = $CacheFile
+                Value       = $GeneratedScript
+                Encoding    = 'UTF8'
+                Force       = $True
+            }
+            Set-Content @CacheParameters
+        }
+    }
+    End {
+        If ($CommandInfo -and (Test-Path -LiteralPath $CacheFile)) {
+            $CacheFile
+        }
+    }
+}
+
 Function Get-CachedCommandInit {
     <#
     .SYNOPSIS
         Retrieves or generates a disk-cached initialization script for CLI tools.
     .DESCRIPTION
-        Checks if a cached initialization script exists under LocalAppData and
-        compares its modification timestamp against the binary executable.
-        If missing or stale, executes the generator ScriptBlock, saves the script,
-        and returns the cache file path for dot-sourcing.
-    .PARAMETER CommandName
-        The name of the CLI tool (e.g. 'starship', 'zoxide').
-    .PARAMETER InitGenerator
-        The ScriptBlock used to produce the initialization script.
-    .EXAMPLE
-        Get-CachedCommandInit -CommandName 'starship' -InitGenerator { starship init powershell }
-        Returns the path to the cached starship initialization script.
+        Backward-compatible wrapper around Get-CachedCommandScript for CLI tool initialization.
     #>
     [CmdletBinding()]
     Param (
@@ -386,94 +446,76 @@ Function Get-CachedCommandInit {
         [ScriptBlock]
         $InitGenerator
     )
-    Begin {
-        $CommandInfo = Get-Command -Name $CommandName -ErrorAction SilentlyContinue
-    }
+    Get-CachedCommandScript -CommandName $CommandName -ScriptGenerator $InitGenerator -CacheType Init
+}
+
+Function Register-LazyCommandCompleter {
+    <#
+    .SYNOPSIS
+        Registers a lazy, disk-cached argument completer for a CLI command.
+    .DESCRIPTION
+        Sets up a native argument completer that defers generating and loading
+        the full completion script until the user triggers tab completion for
+        the specified command.
+    .PARAMETER CommandName
+        The command name or names to register completers for.
+    .PARAMETER ScriptGenerator
+        Optional ScriptBlock to generate completion script. Defaults to
+        '& <command> completion powershell'.
+    .EXAMPLE
+        @('minikube', 'kubectl', 'helm') | Register-LazyCommandCompleter
+    .EXAMPLE
+        Register-LazyCommandCompleter -CommandName 'gh' -ScriptGenerator { & gh completion -s powershell }
+    #>
+    [CmdletBinding()]
+    Param (
+        [Parameter(
+            Mandatory,
+            ValueFromPipeline
+        )]
+        [String[]]
+        $CommandName,
+        [Parameter()]
+        [ScriptBlock]
+        $ScriptGenerator
+    )
     Process {
-        If (-not $CommandInfo) {
-            Return
-        }
-
-        $CacheFile = Join-Path -Path $CompletionCacheDirectory -ChildPath "$CommandName-init.ps1"
-        $BinaryItem = Get-Item -LiteralPath $CommandInfo.Source -ErrorAction SilentlyContinue
-        $CacheItem = Get-Item -LiteralPath $CacheFile -ErrorAction SilentlyContinue
-
-        If (-not $CacheItem -or ($BinaryItem -and $BinaryItem.LastWriteTimeUtc -gt $CacheItem.LastWriteTimeUtc)) {
-            $GeneratedScript = (& $InitGenerator) | Out-String
-            If (-not [String]::IsNullOrWhiteSpace($GeneratedScript)) {
-                $CacheParameters = @{
-                    LiteralPath = $CacheFile
-                    Value       = $GeneratedScript
-                    Encoding    = 'UTF8'
-                    Force       = $True
-                }
-                Set-Content @CacheParameters
+        ForEach ($Command in $CommandName) {
+            If (-not (Get-Command -Name $Command -ErrorAction SilentlyContinue)) {
+                Continue
             }
-        }
-    }
-    End {
-        If ($CommandInfo -and (Test-Path -LiteralPath $CacheFile)) {
-            $CacheFile
+
+            $Generator = If ($ScriptGenerator) {
+                $ScriptGenerator
+            }
+            Else {
+                [ScriptBlock]::Create("& $Command completion powershell")
+            }
+
+            Register-ArgumentCompleter -Native -CommandName $Command -ScriptBlock ({
+                $CachedScript = Get-CachedCommandScript -CommandName $Command -ScriptGenerator $Generator -CacheType Completion
+                If ($CachedScript) {
+                    . $CachedScript
+                }
+            }.GetNewClosure())
         }
     }
 }
 
-$StarshipInitCache = Get-CachedCommandInit -CommandName 'starship' -InitGenerator { starship init powershell }
+$StarshipInitCache = Get-CachedCommandScript -CommandName 'starship' -ScriptGenerator { starship init powershell }
 If ($StarshipInitCache) {
     . $StarshipInitCache
 }
 
-$ZoxideInitCache = Get-CachedCommandInit -CommandName 'zoxide' -InitGenerator { zoxide init powershell --cmd cd }
+$ZoxideInitCache = Get-CachedCommandScript -CommandName 'zoxide' -ScriptGenerator { zoxide init powershell --cmd cd }
 If ($ZoxideInitCache) {
     . $ZoxideInitCache
 }
 
-ForEach ($LazyCommand in @('minikube', 'kubectl', 'helm', 'gh', 'cosign', 'crane', 'skaffold', 'yq', 'uv')) {
-    If (Get-Command -Name $LazyCommand -ErrorAction SilentlyContinue) {
-        Register-ArgumentCompleter -Native -CommandName $LazyCommand -ScriptBlock ({
-            Param (
-                $WordToComplete,
-                $CommandAst,
-                $CursorPosition
-            )
-            $TargetCommand = $CommandAst.CommandElements[0].Value
-            $BaseName = [System.IO.Path]::GetFileNameWithoutExtension($TargetCommand)
-            $CacheFile = Join-Path -Path "$Env:LocalAppData\PowerShell\CompletionCache" -ChildPath "$BaseName-completion.ps1"
-            $CommandInfo = Get-Command -Name $BaseName -ErrorAction SilentlyContinue
-            $BinaryItem = If ($CommandInfo) { Get-Item -LiteralPath $CommandInfo.Source -ErrorAction SilentlyContinue } Else { $Null }
-            $CacheItem = Get-Item -LiteralPath $CacheFile -ErrorAction SilentlyContinue
-
-            If (-not $CacheItem -or ($BinaryItem -and $BinaryItem.LastWriteTimeUtc -gt $CacheItem.LastWriteTimeUtc)) {
-                $CompletionScript = If ($BaseName -eq 'gh') {
-                    (& gh completion -s powershell) | Out-String
-                }
-                ElseIf ($BaseName -eq 'yq') {
-                    (& yq shell-completion powershell) | Out-String
-                }
-                ElseIf ($BaseName -eq 'uv') {
-                    (& uv generate-shell-completion powershell) | Out-String
-                }
-                Else {
-                    (& $BaseName completion powershell) | Out-String
-                }
-
-                If (-not [String]::IsNullOrWhiteSpace($CompletionScript)) {
-                    $CacheParameters = @{
-                        LiteralPath = $CacheFile
-                        Value       = $CompletionScript
-                        Encoding    = 'UTF8'
-                        Force       = $True
-                    }
-                    Set-Content @CacheParameters
-                }
-            }
-
-            If (Test-Path -LiteralPath $CacheFile) {
-                . $CacheFile
-            }
-        }.GetNewClosure())
-    }
-}
+@('minikube', 'kubectl', 'helm', 'cosign', 'crane', 'skaffold') | Register-LazyCommandCompleter
+Register-LazyCommandCompleter -CommandName 'gh' -ScriptGenerator { & gh completion -s powershell }
+Register-LazyCommandCompleter -CommandName 'yq' -ScriptGenerator { & yq shell-completion powershell }
+Register-LazyCommandCompleter -CommandName 'uv' -ScriptGenerator { & uv generate-shell-completion powershell }
 
 $HasPSReadLine = [Boolean](Get-Module -Name PSReadLine -ErrorAction SilentlyContinue)
 

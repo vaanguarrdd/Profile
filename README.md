@@ -172,7 +172,7 @@ PowerShell interactive startup latency is optimized through a two-tiered caching
    - Evaluates the modification timestamp (`LastWriteTimeUtc`) of the executable against the cached script.
    - Re-generates the script only when the tool binary has been upgraded; otherwise dot-sources the cached script directly.
 3. **Lazy-Loaded Completions (`minikube`, `kubectl`, `helm`, `gh`, `cosign`, `crane`, `skaffold`, `yq`, `uv`)**:
-   - Instead of evaluating large completion generation scripts on startup (~200–400ms each), lightweight native argument completers are registered.
+   - Instead of evaluating large completion generation scripts on startup (~200–400ms each), lightweight native argument completers are registered via `Register-LazyCommandCompleter`.
    - When the user presses `<Tab>` on one of these commands for the first time, the completion script is generated, cached on disk, and dot-sourced dynamically.
 4. **Interactive `PSReadLine` Keybindings**:
    - `UpArrow` / `DownArrow`: Prefix-sensitive history search (`HistorySearchBackward` / `HistorySearchForward`).
