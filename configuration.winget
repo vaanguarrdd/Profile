@@ -2,6 +2,7 @@
 properties:
   configurationVersion: 0.2.0
   resources:
+    # Core System & Shell
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: Install_Edge
       directives:
@@ -12,11 +13,29 @@ properties:
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Chrome
+      directives:
+        description: Install Google Chrome
+      settings:
+        id: Google.Chrome
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: Install_WindowsTerminal
       directives:
         description: Install Windows Terminal
       settings:
         id: Microsoft.WindowsTerminal
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_PowerShell
+      directives:
+        description: Install PowerShell 7
+      settings:
+        id: Microsoft.PowerShell
         source: winget
         ensure: Present
 
@@ -39,38 +58,30 @@ properties:
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Git
+      id: Install_WindowsApp
       directives:
-        description: Install Git
+        description: Install Microsoft Windows App
       settings:
-        id: Git.Git
+        id: Microsoft.WindowsApp
         source: winget
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_PowerShell
+      id: Install_WSL
       directives:
-        description: Install PowerShell 7
+        description: Install Windows Subsystem for Linux
       settings:
-        id: Microsoft.PowerShell
+        id: Microsoft.WSL
         source: winget
         ensure: Present
 
+    # Terminal Utilities & Prompt
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_RemoteDesktopClient
+      id: Install_Starship
       directives:
-        description: Install Microsoft Remote Desktop Client
+        description: Install Starship Prompt
       settings:
-        id: Microsoft.RemoteDesktopClient
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Obsidian
-      directives:
-        description: Install Obsidian
-      settings:
-        id: Obsidian.Obsidian
+        id: Starship.Starship
         source: winget
         ensure: Present
 
@@ -102,51 +113,6 @@ properties:
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_7zip
-      directives:
-        description: Install 7-Zip
-      settings:
-        id: 7zip.7zip
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Steam
-      directives:
-        description: Install Valve Steam
-      settings:
-        id: Valve.Steam
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Discord
-      directives:
-        description: Install Discord
-      settings:
-        id: Discord.Discord
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Starship
-      directives:
-        description: Install Starship Prompt
-      settings:
-        id: Starship.Starship
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_iCUE
-      directives:
-        description: Install Corsair iCUE 5
-      settings:
-        id: Corsair.iCUE.5
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: Install_Ripgrep
       directives:
         description: Install ripgrep (MSVC)
@@ -156,29 +122,49 @@ properties:
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Yq
+      directives:
+        description: Install yq
+      settings:
+        id: MikeFarah.yq
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_7zip
+      directives:
+        description: Install 7-Zip
+      settings:
+        id: 7zip.7zip
+        source: winget
+        ensure: Present
+
+    # Data Processing & Analytics
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_DuckDB
+      directives:
+        description: Install DuckDB CLI
+      settings:
+        id: DuckDB.cli
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Jq
+      directives:
+        description: Install jq
+      settings:
+        id: jqlang.jq
+        source: winget
+        ensure: Present
+
+    # Security, Privacy & DFIR
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: Install_KeePass
       directives:
         description: Install KeePass
       settings:
         id: DominikReichl.KeePass
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_GitHubDesktop
-      directives:
-        description: Install GitHub Desktop
-      settings:
-        id: GitHub.GitHubDesktop
-        source: winget
-        ensure: Present
-
-    - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Canva
-      directives:
-        description: Install Canva
-      settings:
-        id: Canva.Canva
         source: winget
         ensure: Present
 
@@ -196,10 +182,221 @@ properties:
       directives:
         description: Install VirusTotal YARA-X
       settings:
-        id: VirusTotal.Yara-X
+        id: VirusTotal.YARA-X
         source: winget
         ensure: Present
 
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_X64dbg
+      directives:
+        description: Install x64dbg
+      settings:
+        id: x64dbg.x64dbg
+        source: winget
+        ensure: Present
+
+    # Git & Source Control
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Git
+      directives:
+        description: Install Git
+      settings:
+        id: Git.Git
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GitHubCli
+      directives:
+        description: Install GitHub CLI
+      settings:
+        id: GitHub.cli
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GitHubDesktop
+      directives:
+        description: Install GitHub Desktop
+      settings:
+        id: GitHub.GitHubDesktop
+        source: winget
+        ensure: Present
+
+    # Cloud, Containers & Infrastructure
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_DockerDesktop
+      directives:
+        description: Install Docker Desktop
+      settings:
+        id: Docker.DockerDesktop
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GoogleCloudSdk
+      directives:
+        description: Install Google Cloud SDK
+      settings:
+        id: Google.CloudSDK
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Kubectl
+      directives:
+        description: Install Kubernetes kubectl
+      settings:
+        id: Kubernetes.kubectl
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Helm
+      directives:
+        description: Install Helm
+      settings:
+        id: Helm.Helm
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Minikube
+      directives:
+        description: Install Minikube
+      settings:
+        id: Kubernetes.minikube
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Terraform
+      directives:
+        description: Install HashiCorp Terraform
+      settings:
+        id: Hashicorp.Terraform
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_AzureFunctionsCoreTools
+      directives:
+        description: Install Azure Functions Core Tools
+      settings:
+        id: Microsoft.Azure.FunctionsCoreTools
+        source: winget
+        ensure: Present
+
+    # Programming Languages & Toolchains
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Uv
+      directives:
+        description: Install astral uv
+      settings:
+        id: astral-sh.uv
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Go
+      directives:
+        description: Install Go programming language
+      settings:
+        id: GoLang.Go
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Rustup
+      directives:
+        description: Install Rustup
+      settings:
+        id: Rustlang.Rustup
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Zig
+      directives:
+        description: Install Zig compiler
+      settings:
+        id: zig.zig
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_NodeJsLts
+      directives:
+        description: Install Node.js LTS
+      settings:
+        id: OpenJS.NodeJS.LTS
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Llvm
+      directives:
+        description: Install LLVM
+      settings:
+        id: LLVM.LLVM
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Msys2
+      directives:
+        description: Install MSYS2
+      settings:
+        id: MSYS2.MSYS2
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GnuGrep
+      directives:
+        description: Install GnuWin32 Grep
+      settings:
+        id: GnuWin32.Grep
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GnuMake
+      directives:
+        description: Install GnuWin32 Make
+      settings:
+        id: GnuWin32.Make
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_VsBuildTools
+      directives:
+        description: Install Visual Studio 2022 Build Tools
+      settings:
+        id: Microsoft.VisualStudio.2022.BuildTools
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_WindowsSdk
+      directives:
+        description: Install Windows SDK 10.0.26100
+      settings:
+        id: Microsoft.WindowsSDK.10.0.26100
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_WingetCreate
+      directives:
+        description: Install WinGet Manifest Creator
+      settings:
+        id: Microsoft.WingetCreate
+        source: winget
+        ensure: Present
+
+    # Editors, IDEs & AI Assistants
     - resource: Microsoft.WinGet.DSC/WinGetPackage
       id: Install_Neovim
       directives:
@@ -210,19 +407,257 @@ properties:
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_DuckDB
+      id: Install_VsCode
       directives:
-        description: Install DuckDB CLI
+        description: Install Visual Studio Code
       settings:
-        id: DuckDB.cli
+        id: Microsoft.VisualStudioCode
         source: winget
         ensure: Present
 
     - resource: Microsoft.WinGet.DSC/WinGetPackage
-      id: Install_Jq
+      id: Install_VSCodium
       directives:
-        description: Install jq
+        description: Install VSCodium
       settings:
-        id: jqlang.jq
+        id: VSCodium.VSCodium
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_MicrosoftEdit
+      directives:
+        description: Install Microsoft Edit
+      settings:
+        id: Microsoft.Edit
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Obsidian
+      directives:
+        description: Install Obsidian
+      settings:
+        id: Obsidian.Obsidian
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GoogleAntigravity
+      directives:
+        description: Install Google Antigravity
+      settings:
+        id: Google.Antigravity
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GoogleAntigravityCli
+      directives:
+        description: Install Google Antigravity CLI
+      settings:
+        id: Google.AntigravityCLI
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GoogleAntigravityIde
+      directives:
+        description: Install Google Antigravity IDE
+      settings:
+        id: Google.AntigravityIDE
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GoogleGeminiDesktop
+      directives:
+        description: Install Google Gemini Desktop
+      settings:
+        id: Google.GeminiDesktop
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Ollama
+      directives:
+        description: Install Ollama
+      settings:
+        id: Ollama.Ollama
+        source: winget
+        ensure: Present
+
+    # Window Management
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Komorebi
+      directives:
+        description: Install komorebi tiling window manager
+      settings:
+        id: LGUG2Z.komorebi
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Whkd
+      directives:
+        description: Install whkd hotkey daemon
+      settings:
+        id: LGUG2Z.whkd
+        source: winget
+        ensure: Present
+
+    # Productivity & Communication
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Discord
+      directives:
+        description: Install Discord
+      settings:
+        id: Discord.Discord
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Teams
+      directives:
+        description: Install Microsoft Teams
+      settings:
+        id: Microsoft.Teams
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Outlook
+      directives:
+        description: Install Microsoft Outlook
+      settings:
+        id: Microsoft.Outlook
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_365Copilot
+      directives:
+        description: Install Microsoft 365 Copilot
+      settings:
+        id: Microsoft.365Copilot
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Spotify
+      directives:
+        description: Install Spotify
+      settings:
+        id: Spotify.Spotify
+        source: winget
+        ensure: Present
+
+    # Creative & Media
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Canva
+      directives:
+        description: Install Canva
+      settings:
+        id: Canva.Canva
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Blender
+      directives:
+        description: Install Blender
+      settings:
+        id: BlenderFoundation.Blender
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Gimp
+      directives:
+        description: Install GIMP
+      settings:
+        id: GIMP.GIMP.3
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_LibreCad
+      directives:
+        description: Install LibreCAD
+      settings:
+        id: LibreCAD.LibreCAD
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_ObsStudio
+      directives:
+        description: Install OBS Studio
+      settings:
+        id: OBSProject.OBSStudio
+        source: winget
+        ensure: Present
+
+    # Gaming & Peripherals
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Steam
+      directives:
+        description: Install Valve Steam
+      settings:
+        id: Valve.Steam
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_GogGalaxy
+      directives:
+        description: Install GOG Galaxy
+      settings:
+        id: GOG.Galaxy
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_Hytale
+      directives:
+        description: Install Hypixel Studios Hytale
+      settings:
+        id: HypixelStudios.Hytale
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_CurseForge
+      directives:
+        description: Install CurseForge
+      settings:
+        id: Overwolf.CurseForge
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_ParadoxLauncher
+      directives:
+        description: Install Paradox Launcher
+      settings:
+        id: ParadoxInteractive.ParadoxLauncher
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_OpAutoClicker
+      directives:
+        description: Install OP Auto Clicker
+      settings:
+        id: OPAutoClicker.OPAutoClicker
+        source: winget
+        ensure: Present
+
+    - resource: Microsoft.WinGet.DSC/WinGetPackage
+      id: Install_BrotherPrintScan
+      directives:
+        description: Install Brother iPrint&Scan
+      settings:
+        id: Brother.iPrintScan
         source: winget
         ensure: Present

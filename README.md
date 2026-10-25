@@ -12,12 +12,12 @@ flowchart TD
         Main -->|Loads precompiled| DLL["bin/IdleState.dll\n(Win32 SetThreadExecutionState)"]
         Main -->|Sources| Comp["completions/wslc.ps1\n(Native Completer)"]
         Main -->|Checks cache| Cache["LocalAppData/.../CompletionCache/\n(starship, zoxide)"]
-        Main -->|Lazy-loads on tab| K8s["minikube, kubectl, helm, gh, cosign, crane, skaffold"]
+        Main -->|Lazy-loads on tab| K8s["minikube, kubectl, helm, gh, cosign, crane, skaffold, yq, uv"]
     end
 
     subgraph Config["System Provisioning Architecture"]
         Invoke["Invoke-Configuration.ps1\n(-WhatIf / -ValidateOnly)"] -->|Applies| DSC["configuration.winget\n(WinGet DSC v0.2.0)"]
-        Invoke -->|Idempotent removal| Bloat["21 AppX Bloatware Packages"]
+        Invoke -->|Idempotent removal| Bloat["20 AppX Bloatware Packages"]
         Invoke -->|Batch DISM| Feat["Windows Capabilities & Features"]
     end
 ```
@@ -26,7 +26,7 @@ flowchart TD
 
 ## Key Highlights
 
-- **⚡ Sub-300ms Shell Startup**: Bypasses slow repetitive CLI init runs using on-disk caching (`starship`, `zoxide`) and lazy-loads heavy completions (`kubectl`, `helm`, `minikube`, `gh`, `cosign`, `crane`, `skaffold`) only on the first `<Tab>` press.
+- **⚡ Sub-300ms Shell Startup**: Bypasses slow repetitive CLI init runs using on-disk caching (`starship`, `zoxide`) and lazy-loads heavy completions (`kubectl`, `helm`, `minikube`, `gh`, `cosign`, `crane`, `skaffold`, `yq`, `uv`) only on the first `<Tab>` press.
 - **🕵️ DFIR & Security Triage (`modules/DFIR.ps1`)**: Single-pass file hashing (`MD5`/`SHA1`/`SHA256`), Shannon byte entropy calculation (`> 7.2` packed/encrypted detection), Authenticode signature verification, JWT decoding, epoch timestamp conversion, YARA-X (`yr`) scanning, Windows Event Log hashtable triage, and TCP-to-process correlation.
 - **📊 Data Processing & DuckDB Analytics (`modules/Data.ps1`)**: Memory-efficient streaming `ConvertFrom-JsonLines` / `ConvertTo-JsonLines` filters, in-process SQL querying over `.parquet`, `.csv`, and `.jsonl` via DuckDB (`dql`), schema inspection (`dschema`), and ZSTD Parquet conversion (`toparquet`).
 - **☁️ Cloud Build & Kubernetes Workflows (`modules/Cloud.ps1`)**: Interactive `fzf`-backed context and namespace switchers for Google Cloud (`gproj`), Cloud Build log streaming (`gcb`), and Kubernetes (`kctx`, `kns`), alongside automated NixOS-WSL provisioning.
@@ -171,7 +171,7 @@ PowerShell interactive startup latency is optimized through a two-tiered caching
 2. **Tool Initialization Cache (`starship-init.ps1`, `zoxide-init.ps1`)**:
    - Evaluates the modification timestamp (`LastWriteTimeUtc`) of the executable against the cached script.
    - Re-generates the script only when the tool binary has been upgraded; otherwise dot-sources the cached script directly.
-3. **Lazy-Loaded Completions (`minikube`, `kubectl`, `helm`, `gh`, `cosign`, `crane`, `skaffold`)**:
+3. **Lazy-Loaded Completions (`minikube`, `kubectl`, `helm`, `gh`, `cosign`, `crane`, `skaffold`, `yq`, `uv`)**:
    - Instead of evaluating large completion generation scripts on startup (~200–400ms each), lightweight native argument completers are registered.
    - When the user presses `<Tab>` on one of these commands for the first time, the completion script is generated, cached on disk, and dot-sourced dynamically.
 4. **Interactive `PSReadLine` Keybindings**:

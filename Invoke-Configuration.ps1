@@ -59,7 +59,6 @@ Param (
         'Microsoft.ZuneVideo_8wekyb3d8bbwe',
         'Microsoft.ZuneMusic_8wekyb3d8bbwe',
         'Microsoft.XboxSpeechToTextOverlay_8wekyb3d8bbwe',
-        'Microsoft.XboxGamingOverlay_8wekyb3d8bbwe',
         'Microsoft.XboxGameOverlay_8wekyb3d8bbwe',
         'Microsoft.Xbox.TCUI_8wekyb3d8bbwe',
         'Microsoft.XboxIdentityProvider_8wekyb3d8bbwe',
@@ -216,11 +215,41 @@ Process {
         Return
     }
 
-    $InstalledAppx = Get-AppxPackage -AllUsers | Where-Object { $PSItem.PackageFamilyName -in $RemoveAppxPackages }
+    $InstalledAppx = Get-AppxPackage -AllUsers -ErrorAction SilentlyContinue | Where-Object { $PSItem.PackageFamilyName -in $RemoveAppxPackages }
     ForEach ($AppxPackage in $InstalledAppx) {
         If ($PSCmdlet.ShouldProcess($AppxPackage.PackageFamilyName, 'Remove-AppxPackage')) {
             Write-Verbose -Message "Removing Appx package $($AppxPackage.PackageFamilyName)"
-            & winget uninstall --id $AppxPackage.PackageFamilyName --silent --accept-source-agreements
+            $RemoveAppxParameters = @{
+                Package        = $AppxPackage.PackageFullName
+                AllUsers       = $True
+                ErrorAction    = 'SilentlyContinue'
+                ProgressAction = 'SilentlyContinue'
+            }
+            Remove-AppxPackage @RemoveAppxParameters
+        }
+    }
+
+    $ProvisionedAppx = Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue | Where-Object {
+        $DisplayName = $PSItem.DisplayName
+        $PkgName = $PSItem.PackageName
+        ForEach ($TargetFamily in $RemoveAppxPackages) {
+            $BaseTarget = ($TargetFamily -split '_')[0]
+            If ($DisplayName -eq $BaseTarget -or $PkgName -like "$BaseTarget*") {
+                Return $True
+            }
+        }
+        Return $False
+    }
+    ForEach ($Provisioned in $ProvisionedAppx) {
+        If ($PSCmdlet.ShouldProcess($Provisioned.DisplayName, 'Remove-AppxProvisionedPackage')) {
+            Write-Verbose -Message "Deprovisioning Appx package $($Provisioned.DisplayName)"
+            $DeprovisionParameters = @{
+                PackageName    = $Provisioned.PackageName
+                Online         = $True
+                ErrorAction    = 'SilentlyContinue'
+                ProgressAction = 'SilentlyContinue'
+            }
+            Remove-AppxProvisionedPackage @DeprovisionParameters | Out-Null
         }
     }
 

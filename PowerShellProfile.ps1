@@ -428,7 +428,7 @@ If ($ZoxideInitCache) {
     . $ZoxideInitCache
 }
 
-ForEach ($LazyCommand in @('minikube', 'kubectl', 'helm', 'gh', 'cosign', 'crane', 'skaffold')) {
+ForEach ($LazyCommand in @('minikube', 'kubectl', 'helm', 'gh', 'cosign', 'crane', 'skaffold', 'yq', 'uv')) {
     If (Get-Command -Name $LazyCommand -ErrorAction SilentlyContinue) {
         Register-ArgumentCompleter -Native -CommandName $LazyCommand -ScriptBlock ({
             Param (
@@ -446,6 +446,12 @@ ForEach ($LazyCommand in @('minikube', 'kubectl', 'helm', 'gh', 'cosign', 'crane
             If (-not $CacheItem -or ($BinaryItem -and $BinaryItem.LastWriteTimeUtc -gt $CacheItem.LastWriteTimeUtc)) {
                 $CompletionScript = If ($BaseName -eq 'gh') {
                     (& gh completion -s powershell) | Out-String
+                }
+                ElseIf ($BaseName -eq 'yq') {
+                    (& yq shell-completion powershell) | Out-String
+                }
+                ElseIf ($BaseName -eq 'uv') {
+                    (& uv generate-shell-completion powershell) | Out-String
                 }
                 Else {
                     (& $BaseName completion powershell) | Out-String
